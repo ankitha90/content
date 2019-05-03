@@ -886,10 +886,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 9f7e7f98-b48e-4ad7-84ab-49be2d9941af
+    taskid: 604c360b-b525-4b29-8231-1d3435ae982d
     type: regular
     task:
-      id: 9f7e7f98-b48e-4ad7-84ab-49be2d9941af
+      id: 604c360b-b525-4b29-8231-1d3435ae982d
       version: -1
       name: Search file rule
       description: 'Search for file rules. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -901,14 +901,22 @@ tasks:
       '#none#':
       - "27"
     scriptarguments:
+      fileCatalogId: {}
+      fileName: {}
+      fileState:
+        simple: Unapproved
       group: {}
+      hash:
+        simple: eab19a382c081ad2d37799ae842cd70631ea0daac8dd5092cb4de450dbd33880
       headers: {}
       limit:
         simple: "1"
-      offset:
-        simple: "30"
+      name:
+        simple: b9systemproxy
+      offset: {}
       query: {}
       sort: {}
+      sourceType: {}
     separatecontext: false
     view: |-
       {
@@ -922,10 +930,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 2132f111-5abc-46ed-8401-e0537760692d
+    taskid: d789ea93-2202-43bb-86f1-ca6a262ea4d8
     type: condition
     task:
-      id: 2132f111-5abc-46ed-8401-e0537760692d
+      id: d789ea93-2202-43bb-86f1-ca6a262ea4d8
       version: -1
       name: Verify context
       type: condition

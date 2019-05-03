@@ -1020,6 +1020,70 @@ script:
       name: sort
       required: false
       secret: false
+    - default: false
+      description: Id of fileCatalog entry associated with this fileRule. Can be null
+        if file hasn’t been seen on any endpoints yet. You can get this by executing
+        cbp-fileCatalog-search
+      isArray: false
+      name: fileCatalogId
+      required: false
+      secret: false
+    - default: false
+      description: Name of this rule
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        File state for this rule. Can be one of:
+        1=Unapproved
+        2=Approved
+        3=Banned
+      isArray: false
+      name: fileState
+      predefined:
+      - Unapproved
+      - Approved
+      - Banned
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Mechanism that created this rule. Can be one of: \n1 = Manual\n\
+        2 = Trusted Directory\n3 = Reputation\n4 = Imported\n5 = External (API)\n\
+        6 = Event Rule\n7 = Application Template\n8 = Unified Management"
+      isArray: false
+      name: sourceType
+      predefined:
+      - Manual
+      - Trusted Directory
+      - Reputation
+      - Imported
+      - External (API)
+      - Event Rule
+      - Application Template
+      - Unified Management
+      required: false
+      secret: false
+    - default: false
+      description: Hash associated with this rule. Note that hash will be available
+        only if rule was created through md5 or sha-1 hash. If rule was created through
+        fileCatalogId or sha-256 hash that exists in the catalog, this field will
+        be empty
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
+      description: File name associated with this rule. Note that file name will be
+        available only if rule was created through file name. If rule was created
+        through fileCatalogId or hash, this field will be empty
+      isArray: false
+      name: fileName
+      required: false
+      secret: false
     deprecated: false
     description: 'Search for file rules. For more information, see the Carbon Black
       documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'

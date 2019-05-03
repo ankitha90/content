@@ -830,8 +830,8 @@ def event_severity_to_string(severity):
         6: 'Info',
         7: 'Debug'
     }
-    return severity_dict.get(severity, severity
-                             )
+    return severity_dict.get(severity, severity)
+
 
 def search_approval_request_command():
     """
@@ -944,8 +944,10 @@ def search_file_rule_command():
     :return: EntryObject of the file rules
     """
     args = demisto.args()
-    raw_file_rules = search_file_rule(args.get('query'), args.get('limit'), args.get('offset'),
-                                      args.get('sort'), args.get('group'))
+    raw_file_rules = search_file_rule(args.get('query'), args.get('limit'), args.get('offset'), args.get('sort'),
+                                      args.get('group'), args.get('fileCatalogId'), args.get('name'),
+                                      args.get('fileState'), args.get('sourceType'), args.get('hash'),
+                                      args.get('fileName'))
     hr_file_rules = []
     file_rules = []
     if raw_file_rules:
@@ -972,7 +974,8 @@ def search_file_rule_command():
 
 
 @logger
-def search_file_rule(q=None, limit=None, offset=None, sort=None, group=None):
+def search_file_rule(q=None, limit=None, offset=None, sort=None, group=None, file_catalog_id=None, name=None,
+                     file_state=None, source_type=None, hash_value=None, file_name=None):
     """
     Sends the request for file rule, and returns the result json
     :param q: Query to be executed
@@ -980,19 +983,69 @@ def search_file_rule(q=None, limit=None, offset=None, sort=None, group=None):
     :param offset: Offset of the file instances to be fetched
     :param sort: Sort argument for request
     :param group: Group argument for request
+    :param file_catalog_id: Id of fileCatalog entry associated with this fileRule
+    :param name: Name of this rule
+    :param file_state: File state for this
+    :param source_type: Mechanism that created this rule
+    :param hash_value: Hash associated with this rule
+    :param file_name: File name associated with this rule
     """
     url_params = {
         "limit": limit,
         "offset": offset,
         "sort": sort,
-        "group": group
+        "group": group,
+        "q": q.split('&') if q else []  # handle multi condition queries in the following formats: a&b
     }
-    if q:
-        # handle multi condition queries in the following formats: a&b
-        q = q.split('&')
-        url_params['q'] = q
+    if file_catalog_id:
+        url_params['q'].append(f'fileCatalogId:{file_catalog_id}')
+    if name:
+        url_params['q'].append(f'name:{name}')
+    if file_state:
+        url_params['q'].append(f'fileState:{file_rule_file_state_to_int(file_state)}')
+    if source_type:
+        url_params['q'].append(f'sourceType:{file_rule_source_type_to_int(source_type)}')
+    if hash_value:
+        url_params['q'].append(f'hash:{hash_value}')
+    if file_name:
+        url_params['q'].append(f'fileName:{file_name}')
 
     return http_request('GET', '/fileRule', params=url_params)
+
+
+@logger
+def file_rule_file_state_to_int(file_state):
+    """
+    Returns file rule file state in int format
+    :param file_state: File state of a file rule
+    :return: file rule file state in int format
+    """
+    state_dict = {
+        'Unapproved': 1,
+        'Approved': 2,
+        'Banned': 3
+    }
+    return state_dict.get(file_state, file_state)
+
+
+@logger
+def file_rule_source_type_to_int(e_type):
+    """
+    Returns type of the event in int format
+    :param e_type: event type in string or int format
+    :return: type of the event in int format
+    """
+    type_dict = {
+        'Manual': 1,
+        'Trusted Directory': 2,
+        'Reputation': 3,
+        'Imported': 4,
+        'External (API)': 5,
+        'Event Rule': 6,
+        'Application Template': 7,
+        'Unified Management': 8
+    }
+    return type_dict.get(e_type, e_type)
 
 
 @logger
