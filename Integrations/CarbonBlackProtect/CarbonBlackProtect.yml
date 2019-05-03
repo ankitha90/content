@@ -1405,6 +1405,48 @@ script:
       name: sort
       required: false
       secret: false
+    - default: false
+      description: Subject name of leaf certificate for this publisher
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Reputation of this publisher. Can be one of:
+        0=Not trusted (Unknown)
+        1=Low
+        2=Medium
+        3=High
+      isArray: false
+      name: publisherReputation
+      predefined:
+      - Not trusted (Unknown)
+      - Low
+      - Medium
+      - High
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        State for this publisher. Can be one of:
+        1=Unapproved
+        2=Approved
+        3=Banned
+        4=Approved By Policy
+        5=Banned By Policy
+      isArray: false
+      name: publisherState
+      predefined:
+      - Unapproved
+      - Approved
+      - Banned
+      - Approved By Policy
+      - Banned By Policy
+      required: false
+      secret: false
     deprecated: false
     description: 'Search for publishers. For more information, see the Carbon Black
       documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#publisher.'

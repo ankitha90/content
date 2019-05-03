@@ -1400,8 +1400,9 @@ def search_publisher_command():
     :return: EntryObject of the publishers
     """
     args = demisto.args()
-    raw_publishers = search_publisher(args.get('query'), args.get('limit'), args.get('offset'),
-                                      args.get('sort'), args.get('group'))
+    raw_publishers = search_publisher(args.get('query'), args.get('limit'), args.get('offset'), args.get('sort'),
+                                      args.get('group'), args.get('name'), args.get('publisherReputation'),
+                                      args.get('publisherState'))
     hr_publishers = []
     publishers = []
     if raw_publishers:
@@ -1428,7 +1429,7 @@ def search_publisher_command():
 
 
 @logger
-def search_publisher(q=None, limit=None, offset=None, sort=None, group=None):
+def search_publisher(q=None, limit=None, offset=None, sort=None, group=None, name=None, reputation=None, state=None):
     """
     Sends the request for publisher, and returns the result json
     :param q: Query to be executed
@@ -1436,19 +1437,53 @@ def search_publisher(q=None, limit=None, offset=None, sort=None, group=None):
     :param offset: Offset of the file instances to be fetched
     :param sort: Sort argument for request
     :param group: Group argument for request
+    :param name: Subject name of leaf certificate for this publisher
+    :param reputation: Reputation of this publisher
+    :param state: State for this publisher
     """
     url_params = {
         "limit": limit,
         "offset": offset,
         "sort": sort,
-        "group": group
+        "group": group,
+        "q": q.split('&') if q else []  # handle multi condition queries in the following formats: a&b
     }
-    if q:
-        # handle multi condition queries in the following formats: a&b
-        q = q.split('&')
-        url_params['q'] = q
+    if name:
+        url_params['q'].append(f'name:{name}')
+    if reputation:
+        url_params['q'].append(f'publisherReputation:{publisher_reputation_to_int(reputation)}')
+    if state:
+        url_params['q'].append(f'publisherState:{publisher_state_to_int(state)}')
 
     return http_request('GET', '/publisher', params=url_params)
+
+
+@logger
+def publisher_reputation_to_int(reputation):
+    """
+    Returns the publisher reputation as an int
+    :param reputation: reputation of the publisher
+    :return: publisher reputation as a string
+    """
+    reputation_dict = {
+        'Not trusted (Unknown)': 0,
+        'Low': 1,
+        'Medium': 2,
+        'High': 3
+    }
+    return reputation_dict.get(reputation, reputation)
+
+
+@logger
+def publisher_state_to_int(state):
+    state_dict = {
+        'Unapproved': 1,
+        'Approved': 2,
+        'Banned': 3,
+        'Approved By Policy': 4,
+        'Banned By Policy': 5
+    }
+    return state_dict.get(state, state)
 
 
 def get_file_analysis_command():

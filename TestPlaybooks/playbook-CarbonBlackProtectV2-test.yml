@@ -1213,10 +1213,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: 0d83f6b8-6490-4e2b-8056-776837e99fb9
+    taskid: 28a13fd2-bedf-411e-84b9-3dea449101bd
     type: regular
     task:
-      id: 0d83f6b8-6490-4e2b-8056-776837e99fb9
+      id: 28a13fd2-bedf-411e-84b9-3dea449101bd
       version: -1
       name: Search publisher
       script: CarbonBlackProtectionV2|||cbp-publisher-search
@@ -1228,11 +1228,15 @@ tasks:
       - "36"
     scriptarguments:
       group: {}
-      limit:
-        simple: "5"
+      limit: {}
+      name:
+        simple: Bit9, Inc
       offset: {}
-      query:
-        simple: publisherReputation:0
+      publisherReputation:
+        simple: Not trusted (Unknown)
+      publisherState:
+        simple: Approved
+      query: {}
       sort: {}
     separatecontext: false
     view: |-
@@ -1247,10 +1251,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: 384cfab7-a931-451b-8aed-bdd657bc9b7e
+    taskid: e6f38aa1-e9f7-4148-8f53-3f288df51aa2
     type: condition
     task:
-      id: 384cfab7-a931-451b-8aed-bdd657bc9b7e
+      id: e6f38aa1-e9f7-4148-8f53-3f288df51aa2
       version: -1
       name: Verify context
       type: condition
@@ -1272,7 +1276,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Carbon Black, Inc.
+              simple: Bit9, Inc
       - - operator: isEqualNumber
           left:
             value:
