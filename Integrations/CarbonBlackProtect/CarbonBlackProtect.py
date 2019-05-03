@@ -1213,11 +1213,13 @@ def search_policy_command():
     """
     args = demisto.args()
     raw_policy = search_policy(args.get('query'), args.get('limit'), args.get('offset'),
-                               args.get('sort'), args.get('group'))
+                               args.get('sort'),  args.get('group'),
+                               args.get('enforcementLevel'), args.get('disconnectedEnforcementLevel'))
+    hr_policies = []
     policies = []
     if raw_policy:
         for policy in raw_policy:
-            policies.append({
+            policy_ec = {
                 'ReadOnly': policy.get('readOnly'),
                 'EnforcementLevel': policy.get('enforcementLevel'),
                 'ReputationEnabled': policy.get('reputationEnabled'),
@@ -1234,16 +1236,20 @@ def search_policy_command():
                 'ID': policy.get('id'),
                 'Description': policy.get('description'),
                 'DisconnectedEnforcementLevel': policy.get('disconnectedEnforcementLevel')
-            })
+            }
+            policies.append(policy_ec)
+            hr_policy = dict(policy_ec)
+            hr_policy['EnforcementLevel'] = policy_enforcement_lvl_to_string(hr_policy['EnforcementLevel'])
+            hr_policies.append(hr_policy)
     headers = args.get('headers', POLICY_HEADERS)
     hr_title = "CarbonBlack Protect Policy Search"
-    hr = tableToMarkdown(hr_title, policies, headers, removeNull=True, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(hr_title, hr_policies, headers, removeNull=True, headerTransform=pascalToSpace)
     policies = {'CBP.Policy(val.ID === obj.ID)': policies} if policies else None
     return_outputs(hr, policies, raw_policy)
 
 
 @logger
-def search_policy(q=None, limit=None, offset=None, sort=None, group=None):
+def search_policy(q=None, limit=None, offset=None, sort=None, group=None, enf_lvl=None, dc_enf_lvl=None):
     """
     Sends the request for search policy, and returns the result json
     :param q: Query to be executed
@@ -1251,19 +1257,59 @@ def search_policy(q=None, limit=None, offset=None, sort=None, group=None):
     :param offset: Offset of the file instances to be fetched
     :param sort: Sort argument for request
     :param group: Group argument for request
+    :param enf_lvl: Target enforcement level
+    :param dc_enf_lvl: Target enforcement level for disconnected computers
     """
     url_params = {
         "limit": limit,
         "offset": offset,
         "sort": sort,
-        "group": group
+        "group": group,
+        "q": q.split('&') if q else []  # handle multi condition queries in the following formats: a&b
     }
-    if q:
-        # handle multi condition queries in the following formats: a&b
-        q = q.split('&')
-        url_params['q'] = q
+    if enf_lvl:
+        url_params['q'].append(f'enforcementLevel:{policy_enforcement_lvl_to_int(enf_lvl)}')
+    if dc_enf_lvl:
+        url_params['q'].append(f'disconnectedEnforcementLevel:{policy_enforcement_lvl_to_int(dc_enf_lvl)}')
+
+    demisto.info(url_params)
 
     return http_request('GET', '/policy', params=url_params)
+
+
+@logger
+def policy_enforcement_lvl_to_int(enf_lvl):
+    """
+    Returns enforcement level in int
+    :param enf_lvl: enforcement level string
+    :return: enforcement level in int
+    """
+    enf_dict = {
+        'High (Block Unapproved)': 20,
+        'Medium (Prompt Unapproved)': 30,
+        'Low (Monitor Unapproved)': 40,
+        'None (Visibility)': 60,
+        'None (Disabled)': 80
+    }
+    return enf_dict.get(enf_lvl, enf_lvl)
+
+
+@logger
+def policy_enforcement_lvl_to_string(enf_lvl):
+    """
+    Returns enforcement level in string
+    :param enf_lvl: enforcement level int
+    :return: enforcement level string
+    """
+    enf_dict = {
+        20: 'High (Block Unapproved)',
+        30: 'Medium (Prompt Unapproved)',
+        40: 'Low (Monitor Unapproved)',
+        60: 'None (Visibility)',
+        80: 'None (Disabled)'
+    }
+
+    return enf_dict.get(enf_lvl, enf_lvl)
 
 
 def search_server_config_command():

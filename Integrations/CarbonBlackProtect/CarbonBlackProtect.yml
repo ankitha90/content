@@ -1208,6 +1208,44 @@ script:
       name: sort
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Target enforcement level. Can be one of:
+        20=High (Block Unapproved)
+        30=Medium (Prompt Unapproved)
+        40=Low (Monitor Unapproved)
+        60=None (Visibility)
+        80=None (Disabled)
+      isArray: false
+      name: enforcementLevel
+      predefined:
+      - High (Block Unapproved)
+      - Medium (Prompt Unapproved)
+      - Low (Monitor Unapproved)
+      - None (Visibility)
+      - None (Disabled)
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Target enforcement level for disconnected computers. Can be one of:
+        20=High (Block Unapproved)
+        30=Medium (Prompt Unapproved)
+        40=Low (Monitor Unapproved)
+        60=None (Visibility)
+        80=None (Disabled)
+      isArray: false
+      name: disconnectedEnforcementLevel
+      predefined:
+      - High (Block Unapproved)
+      - Medium (Prompt Unapproved)
+      - Low (Monitor Unapproved)
+      - None (Visibility)
+      - None (Disabled)
+      required: false
+      secret: false
     deprecated: false
     description: 'Search for policies. For more information, see the Carbon Black
       documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#policy'
